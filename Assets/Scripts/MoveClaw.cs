@@ -11,7 +11,7 @@ public class MoveClaw : MonoBehaviour
     private float horizontalInput;
     private float verticalInput;
 
-    public int state;
+    private int state;
     public Text text;
     private bool clawable;
     private Vector3 startPos;
@@ -50,9 +50,10 @@ public class MoveClaw : MonoBehaviour
         if (state == 2 && !clawable)
         {
             printText("claw close now");
+            //TODO:
             CloseClaw();
         }
-        //raise claw
+        //raise claw 3
         if (state == 3 && !clawable)
         {
             printText("claw lifting now");
@@ -70,15 +71,15 @@ public class MoveClaw : MonoBehaviour
         if (state == 4 && !clawable)
         {
             printText("claw moving back to starting position");
-            if (transform.position.x > startPos.x)
-            {
-                transform.position += Vector3.left * Time.deltaTime * speed;
-                //print(transform.position.x.ToString());
-            }
-            else if (transform.position.z > startPos.z)
+            if (transform.position.z > startPos.z)
             {
                 transform.position += Vector3.back * Time.deltaTime * speed;
                 //print(transform.position.z.ToString());
+            }
+            else if (transform.position.x > startPos.x)
+            {
+                transform.position += Vector3.left * Time.deltaTime * speed;
+                //print(transform.position.x.ToString());
             }
             else
             {
