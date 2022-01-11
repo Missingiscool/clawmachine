@@ -10,11 +10,22 @@ public class MoveClaw : MonoBehaviour
     public float dropSpeed = 10.0f;
     private float horizontalInput;
     private float verticalInput;
+    public GameObject claw;
+    public Collider claw1;
+    public Collider claw2;
+    public Collider claw3;
+    public Collided claw1c;
+    public Collided claw2c;
+    public Collided claw3c;
 
     private int state;
     public Text text;
     private bool clawable;
+    bool checkit = true;
+    bool closing = false;
     private Vector3 startPos;
+
+    private Animator anim;
 
 
     // Start is called before the first frame update
@@ -24,6 +35,10 @@ public class MoveClaw : MonoBehaviour
         state = 0;
         clawable = true;
         startPos = transform.position;
+        anim = claw.GetComponent<Animator>();
+        claw1c = claw1.GetComponent<Collided>();
+        claw2c = claw2.GetComponent<Collided>();
+        claw3c = claw3.GetComponent<Collided>();
     }
     // Update is called once per frame
     void FixedUpdate()
@@ -37,26 +52,60 @@ public class MoveClaw : MonoBehaviour
         if (Input.GetKey(KeyCode.Space) && clawable)
         {
             clawable = false;
+            checkit = true;
             state = 1;
         }
 
+        if (state == 1 && checkit && !clawable)
+        {
+            claw1c.collided = false;
+            claw2c.collided = false;
+            claw3c.collided = false;
+            checkit = false;
+        }
+
         //drop 1
-        if(state == 1 && !clawable)
+        if (state == 1 && !clawable)
         {
             transform.position += Vector3.down * Time.deltaTime * dropSpeed;
             printText("claw drop now");
         }
+
+        if (state == 1)
+        {
+            if (claw1c.getCollided() || claw2c.getCollided() || claw3c.getCollided())
+            {
+                state = 2;
+            }
+        }
+
         //close claw 2
         if (state == 2 && !clawable)
         {
             printText("claw close now");
+            
             //TODO:
             CloseClaw();
         }
-        //raise claw 3
-        if (state == 3 && !clawable)
+        //claw closed 3
+        if (state == 3 && !clawable && closing)
         {
-            printText("claw lifting now");
+            if (AnimatorIsPlaying("Close"))
+            {
+                closing = false;
+                transform.position += Vector3.down * Time.deltaTime * dropSpeed;
+                state = 4;
+            }
+            else
+            {
+                transform.position += Vector3.down * Time.deltaTime * dropSpeed;
+            }
+             
+        }
+        //raise claw 4
+        if (state == 4 && !clawable)
+        {
+            //printText(AnimatorIsPlaying().ToString());
             if (transform.position.y < startPos.y)
             {
                 transform.position += Vector3.up * Time.deltaTime * dropSpeed;
@@ -64,11 +113,11 @@ public class MoveClaw : MonoBehaviour
             }
             else
             {
-                state = 4;
+                state = 5;
             }
         }
-        //move claw back to start
-        if (state == 4 && !clawable)
+        //move claw back to start 5
+        if (state == 5 && !clawable)
         {
             printText("claw moving back to starting position");
             if (transform.position.z > startPos.z)
@@ -83,17 +132,17 @@ public class MoveClaw : MonoBehaviour
             }
             else
             {
-                state = 5;
+                state = 6;
             }
         }
         //open claw
-        if (state == 5 && !clawable)
+        if (state == 6 && !clawable)
         {
             printText("claw opening now");
             OpenClaw();
         }
 
-        if (clawable) { 
+        if (clawable) {
             transform.position += Vector3.forward * Time.deltaTime * speed * verticalInput;
             transform.position += Vector3.right * Time.deltaTime * speed * horizontalInput;
         }
@@ -104,14 +153,7 @@ public class MoveClaw : MonoBehaviour
 
     }
 
-    void OnCollisionEnter(Collision collision)
-    {
-        printText("collision detected");
-        if(state == 1)
-        {
-            state = 2;
-        }
-    }
+
     private void DropClaw()
     {
         //drop claw down
@@ -119,10 +161,27 @@ public class MoveClaw : MonoBehaviour
         CloseClaw();
     }
 
+    bool AnimatorIsPlaying()
+    {
+        return anim.GetCurrentAnimatorStateInfo(0).length >
+               anim.GetCurrentAnimatorStateInfo(0).normalizedTime;
+    }
+
+    bool AnimatorIsPlaying(string stateName)
+    {
+        return AnimatorIsPlaying() && anim.GetCurrentAnimatorStateInfo(0).IsName(stateName);
+    }
+
     private void CloseClaw()
     {
         //close claw
-        printText("claw closed");
+
+        //printText(anim.GetClipCount().ToString());
+
+        anim.Play("Close");
+        closing = true;
+
+        //printText("claw closed");
         state = 3;
         //LiftClaw();
     }
@@ -141,6 +200,9 @@ public class MoveClaw : MonoBehaviour
 
     private void OpenClaw()
     {
+
+        anim.Play("Open");
+
         printText("claw opened");
         state = 0;
         clawable = true;

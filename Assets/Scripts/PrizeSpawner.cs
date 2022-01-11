@@ -7,7 +7,7 @@ using Random = UnityEngine.Random;
 public class PrizeSpawner : MonoBehaviour
 {
     public GameObject prize;
-    public int prize_number = 10;
+    public int prize_number = 30;
     public int xbounds = 50;
     public int zbounds = 50;
     public int ybounds = 60;
