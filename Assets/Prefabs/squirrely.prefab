@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 132501676229526020}
   m_Layer: 0
   m_Name: squirrely
-  m_TagString: Untagged
+  m_TagString: Prize
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

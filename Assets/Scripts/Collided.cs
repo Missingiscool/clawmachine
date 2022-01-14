@@ -19,9 +19,19 @@ public class Collided : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        collided = true;
+        if (collision.gameObject.CompareTag("Environment"))
+        {
+            collided = true;
+        }
     }
+    void OnTriggerEnter(Collider collider)
+    {
+        if(collider.gameObject.CompareTag("Environment")|| collider.gameObject.CompareTag("Prize"))
+        {
+            collided = true;
+        }
 
+    }
     public bool getCollided()
     {
         return collided;

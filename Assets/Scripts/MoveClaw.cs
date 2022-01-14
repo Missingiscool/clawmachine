@@ -11,18 +11,20 @@ public class MoveClaw : MonoBehaviour
     private float horizontalInput;
     private float verticalInput;
     public GameObject claw;
-    public Collider claw1;
-    public Collider claw2;
-    public Collider claw3;
-    public Collided claw1c;
-    public Collided claw2c;
-    public Collided claw3c;
+    //public Collider claw1;
+    //public Collider claw2;
+    //public Collider claw3;
+    //public Collided claw1c;
+    //public Collided claw2c;
+    //public Collided claw3c;
+    private Collided assemblyScript;
 
     private int state;
     public Text text;
     private bool clawable;
     bool checkit = true;
     bool closing = false;
+    bool collided = false;
     private Vector3 startPos;
 
     private Animator anim;
@@ -36,9 +38,10 @@ public class MoveClaw : MonoBehaviour
         clawable = true;
         startPos = transform.position;
         anim = claw.GetComponent<Animator>();
-        claw1c = claw1.GetComponent<Collided>();
-        claw2c = claw2.GetComponent<Collided>();
-        claw3c = claw3.GetComponent<Collided>();
+        //claw1c = claw1.GetComponent<Collided>();
+        //claw2c = claw2.GetComponent<Collided>();
+        //claw3c = claw3.GetComponent<Collided>();
+        assemblyScript = claw.GetComponent<Collided>();
     }
     // Update is called once per frame
     void FixedUpdate()
@@ -58,25 +61,33 @@ public class MoveClaw : MonoBehaviour
 
         if (state == 1 && checkit && !clawable)
         {
-            claw1c.collided = false;
-            claw2c.collided = false;
-            claw3c.collided = false;
+            //claw1c.collided = false;
+            //claw2c.collided = false;
+            //claw3c.collided = false;
+            assemblyScript.collided = false;
+
+
             checkit = false;
         }
 
         //drop 1
         if (state == 1 && !clawable)
         {
+            collided = false;
             transform.position += Vector3.down * Time.deltaTime * dropSpeed;
             printText("claw drop now");
         }
 
         if (state == 1)
         {
-            if (claw1c.getCollided() || claw2c.getCollided() || claw3c.getCollided())
+            //if (claw1c.getCollided() || claw2c.getCollided() || claw3c.getCollided())
+            //{
+            if (assemblyScript.getCollided())
             {
                 state = 2;
+                collided = true;
             }
+            //}
         }
 
         //close claw 2
@@ -206,6 +217,7 @@ public class MoveClaw : MonoBehaviour
         printText("claw opened");
         state = 0;
         clawable = true;
+        
     }
 
     private void printText(string s)
